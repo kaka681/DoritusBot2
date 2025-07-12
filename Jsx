@@ -1,0 +1,274 @@
+```jsx
+import React, { useState } from 'react';
+
+export default function App() {
+  const [currentPage, setCurrentPage] = useState('home');
+  const [ra, setRa] = useState('');
+  const [senha, setSenha] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [selectedLessons, setSelectedLessons] = useState([]);
+  const [lessonType, setLessonType] = useState('');
+
+  const pendingLessons = [
+    "Matemática - Etapa 1",
+    "Português - Redação",
+    "Ciências - Revisão",
+    "História - Atividade Online"
+  ];
+
+  const expiredLessons = [
+    "Geografia - Mapa Mundial",
+    "Física - Leis de Newton",
+    "Artes - Desenho Geométrico",
+    "Inglês - Grammar Exercise"
+  ];
+
+  const handleSelectLesson = (lesson) => {
+    if (selectedLessons.includes(lesson)) {
+      setSelectedLessons(selectedLessons.filter((l) => l !== lesson));
+    } else {
+      setSelectedLessons([...selectedLessons, lesson]);
+    }
+  };
+
+  const toggleAll = () => {
+    if (lessonType === 'pending') {
+      if (selectedLessons.length === pendingLessons.length) {
+        setSelectedLessons([]);
+      } else {
+        setSelectedLessons([...pendingLessons]);
+      }
+    } else {
+      if (selectedLessons.length === expiredLessons.length) {
+        setSelectedLessons([]);
+      } else {
+        setSelectedLessons([...expiredLessons]);
+      }
+    }
+  };
+
+  const renderHome = () => (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white p-6">
+      <h1 className="text-5xl font-extrabold mb-4 bg-gradient-to-r from-red-300 to-red-800 text-transparent bg-clip-text">DoritusBot</h1>
+      <p className="text-lg text-center mb-10">Automatize suas lições com inteligência e facilidade!</p>
+
+      <button
+        onClick={() => setShowModal(true)}
+        className="bg-gradient-to-r from-red-500 to-red-700 px-6 py-3 rounded-full text-white font-semibold hover:opacity-90 transition mb-4"
+      >
+        Fazer Lições Pendentes
+      </button>
+
+      <button
+        onClick={() => {
+          setShowModal(true);
+          setLessonType('expired');
+        }}
+        className="bg-gradient-to-r from-red-500 to-red-700 px-6 py-3 rounded-full text-white font-semibold hover:opacity-90 transition"
+      >
+        Fazer Lições Expiradas
+      </button>
+
+      <p
+        onClick={() => setCurrentPage('links')}
+        className="mt-12 text-center cursor-pointer bg-gradient-to-r from-blue-400 to-purple-600 text-transparent bg-clip-text font-medium"
+      >
+        Clique aqui para encontrar mais links
+      </p>
+    </div>
+  );
+
+  const renderLogin = () => (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white p-6">
+      <h1 className="text-4xl font-bold mb-6 bg-gradient-to-r from-red-300 to-red-800 text-transparent bg-clip-text">Acesso à Sala do Futuro</h1>
+
+      <input
+        type="text"
+        placeholder="RA da Sala do Futuro"
+        value={ra}
+        onChange={(e) => setRa(e.target.value)}
+        className="w-full max-w-md p-3 mb-4 rounded-lg bg-gray-900 border border-gray-700 text-white"
+      />
+
+      <input
+        type="password"
+        placeholder="Senha da Sala do Futuro"
+        value={senha}
+        onChange={(e) => setSenha(e.target.value)}
+        className="w-full max-w-md p-3 mb-6 rounded-lg bg-gray-900 border border-gray-700 text-white"
+      />
+
+      <button
+        onClick={() => setShowModal(true)}
+        className="bg-gradient-to-r from-red-500 to-red-700 px-6 py-3 rounded-full text-white font-semibold hover:opacity-90 transition"
+      >
+        Continuar
+      </button>
+    </div>
+  );
+
+  const renderLessonsModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+      <div className="bg-gray-900 p-6 rounded-xl w-full max-w-md shadow-2xl border border-gray-700">
+        <h2 className="text-xl font-bold mb-4 text-white">
+          Selecione as lições a fazer ({lessonType === 'pending' ? 'Pendentes' : 'Expiradas'})
+        </h2>
+
+        <div className="max-h-60 overflow-y-auto mb-4 space-y-2">
+          {(lessonType === 'pending' ? pendingLessons : expiredLessons).map((lesson, index) => (
+            <div key={index} className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id={`lesson-${index}`}
+                checked={selectedLessons.includes(lesson)}
+                onChange={() => handleSelectLesson(lesson)}
+                className="form-checkbox h-5 w-5 text-red-600"
+              />
+              <label htmlFor={`lesson-${index}`} className="text-white">{lesson}</label>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex justify-between mt-4">
+          <button
+            onClick={toggleAll}
+            className="px-4 py-2 bg-red-600 rounded-md hover:bg-red-700 transition"
+          >
+            {selectedLessons.length === (lessonType === 'pending' ? pendingLessons.length : expiredLessons.length)
+              ? 'Desmarcar Tudo'
+              : 'Marcar Tudo'}
+          </button>
+
+          <button
+            onClick={() => {
+              setShowModal(false);
+              setSelectedLessons([]);
+            }}
+            className="px-4 py-2 bg-gray-700 rounded-md hover:bg-gray-600 transition"
+          >
+            Cancelar
+          </button>
+        </div>
+
+        <button
+          onClick={() => alert(`Lição(es) selecionada(s): ${selectedLessons.join(', ')}`)}
+          className="mt-4 w-full py-2 bg-gradient-to-r from-red-500 to-red-700 rounded-md hover:opacity-90 transition"
+        >
+          Fazer Escolhidas
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderLinksPage = () => (
+    <div className="min-h-screen bg-black text-white p-6">
+      <div className="flex flex-col items-center">
+        <h1 className="text-5xl font-extrabold mb-6 bg-gradient-to-r from-red-300 to-red-800 text-transparent bg-clip-text">DoritusBot</h1>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-4xl mb-10">
+          <LinkCard title="Khan Academy" link="/khan-academy" />
+          <LinkCard title="Redação" link="/redacao" />
+          <LinkCard title="Speak" link="/speak" />
+        </div>
+
+        <p
+          onClick={() => setCurrentPage('home')}
+          className="cursor-pointer bg-gradient-to-r from-blue-400 to-purple-600 text-transparent bg-clip-text font-medium"
+        >
+          Voltar ao início
+        </p>
+      </div>
+    </div>
+  );
+
+  const renderKhanAcademy = () => (
+    <div className="min-h-screen bg-black text-white p-6">
+      <div className="flex flex-col items-center">
+        <h1 className="text-5xl font-extrabold mb-6 bg-gradient-to-r from-red-300 to-red-800 text-transparent bg-clip-text">DoritusBot - Khan Academy</h1>
+
+        <button
+          onClick={() => setShowModal(true)}
+          className="bg-gradient-to-r from-red-500 to-red-700 px-6 py-3 rounded-full text-white font-semibold hover:opacity-90 transition mb-6"
+        >
+          Fazer Atividades do Khan Academy
+        </button>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-4xl">
+          <SubjectCard subject="Matemática" lessons={["Ângulos", "Geometria", "Álgebra"]} />
+          <SubjectCard subject="Ciências" lessons={["Biologia", "Química", "Física"]} />
+        </div>
+
+        <p
+          onClick={() => setCurrentPage('links')}
+          className="mt-10 cursor-pointer bg-gradient-to-r from-blue-400 to-purple-600 text-transparent bg-clip-text font-medium"
+        >
+          Voltar aos Links
+        </p>
+      </div>
+    </div>
+  );
+
+  const renderSpeak = () => (
+    <div className="min-h-screen bg-black text-white p-6">
+      <div className="flex flex-col items-center">
+        <h1 className="text-5xl font-extrabold mb-6 bg-gradient-to-r from-red-300 to-red-800 text-transparent bg-clip-text">DoritusBot - Speak</h1>
+
+        <button
+          onClick={() => setShowModal(true)}
+          className="bg-gradient-to-r from-red-500 to-red-700 px-6 py-3 rounded-full text-white font-semibold hover:opacity-90 transition mb-6"
+        >
+          Fazer Atividades do Speak
+        </button>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-4xl">
+          <SubjectCard subject="Etapa 1" lessons={["Introdução", "Vocabulário"]} />
+          <SubjectCard subject="Etapa 2" lessons={["Conversação", "Gramática"]} />
+        </div>
+
+        <p
+          onClick={() => setCurrentPage('links')}
+          className="mt-10 cursor-pointer bg-gradient-to-r from-blue-400 to-purple-600 text-transparent bg-clip-text font-medium"
+        >
+          Voltar aos Links
+        </p>
+      </div>
+    </div>
+  );
+
+  return (
+    <div>
+      {currentPage === 'home' && renderHome()}
+      {currentPage === 'login' && renderLogin()}
+      {currentPage === 'links' && renderLinksPage()}
+      {currentPage === 'khan' && renderKhanAcademy()}
+      {currentPage === 'speak' && renderSpeak()}
+
+      {showModal && renderLessonsModal()}
+    </div>
+  );
+}
+
+function LinkCard({ title, link }) {
+  return (
+    <div className="bg-gradient-to-br from-gray-800 to-black p-6 rounded-xl shadow-lg border border-gray-700 hover:shadow-2xl transition transform hover:-translate-y-1">
+      <h3 className="text-xl font-bold mb-2 text-white">{title}</h3>
+      <p className="text-sm text-gray-400 cursor-pointer hover:text-white transition" onClick={() => window.location.hash = link}>
+        Acessar plataforma
+      </p>
+    </div>
+  );
+}
+
+function SubjectCard({ subject, lessons }) {
+  return (
+    <div className="bg-gray-800 p-4 rounded-lg shadow border border-gray-700">
+      <h3 className="font-bold text-lg mb-2">{subject}</h3>
+      <ul className="space-y-1">
+        {lessons.map((lesson, idx) => (
+          <li key={idx} className="text-sm text-gray-300">{lesson}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
