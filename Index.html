@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DoritusBot</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+    .bg-title {
+      background: linear-gradient(to right, #fca5a5, #991b1b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .bg-subtitle {
+      background: linear-gradient(to right, #60a5fa, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+</head>
+<body>
+  <div class="flex flex-col items-center justify-center min-h-screen p-6" id="home">
+    <h1 class="text-5xl font-extrabold mb-4 bg-title">DoritusBot</h1>
+    <p class="text-lg text-center mb-10">Automatize suas lições com inteligência e facilidade!</p>
+
+    <button onclick="abrirModal('pending')" class="bg-gradient-to-r from-red-500 to-red-700 px-6 py-3 rounded-full text-white font-semibold hover:opacity-90 transition mb-4">
+      Executar Atividades Pendentes
+    </button>
+
+    <button onclick="abrirModal('expired')" class="bg-gradient-to-r from-red-500 to-red-700 px-6 py-3 rounded-full text-white font-semibold hover:opacity-90 transition">
+      Executar Atividades Expiradas
+    </button>
+
+    <p onclick="window.location.href='links.html'" class="mt-12 text-center cursor-pointer bg-subtitle font-medium">
+      Clique aqui para encontrar mais links
+    </p>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+    <div class="bg-gray-900 p-6 rounded-xl w-full max-w-md shadow-2xl border border-gray-700">
+      <h2 id="modalTitle" class="text-xl font-bold mb-4 text-white"></h2>
+      <div id="lessonList" class="max-h-60 overflow-y-auto mb-4 space-y-2"></div>
+      <div class="flex justify-between mt-4">
+        <button onclick="toggleAll()" id="toggleAllBtn" class="px-4 py-2 bg-red-600 rounded-md hover:bg-red-700 transition">Marcar Tudo</button>
+        <button onclick="fecharModal()" class="px-4 py-2 bg-gray-700 rounded-md hover:bg-gray-600 transition">Cancelar</button>
+      </div>
+      <button onclick="fazerEscolhidas()" class="mt-4 w-full py-2 bg-gradient-to-r from-red-500 to-red-700 rounded-md hover:opacity-90 transition">
+        Executar Escolhidas
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const pendentes = [
+      "Matemática - Etapa 1",
+      "Português - Redação",
+      "Ciências - Revisão",
+      "História - Atividade Online"
+    ];
+    const expiradas = [
+      "Geografia - Mapa Mundial",
+      "Física - Leis de Newton",
+      "Artes - Desenho Geométrico",
+      "Inglês - Grammar Exercise"
+    ];
+    let selecionadas = [];
+    let tipoAtual = 'pending';
+
+    function abrirModal(tipo) {
+      tipoAtual = tipo;
+      selecionadas = [];
+      const lista = tipo === 'pending' ? pendentes : expiradas;
+      document.getElementById('lessonList').innerHTML = lista.map((l, i) =>
+        `<div class='flex items-center space-x-2'>
+          <input type='checkbox' id='li-${i}' onchange='marcar("${l}")' class='form-checkbox h-5 w-5 text-red-600'>
+          <label for='li-${i}' class='text-white'>${l}</label>
+        </div>`
+      ).join('');
+      document.getElementById('modalTitle').textContent = `Selecione as atividades a executar (${tipo === 'pending' ? 'Pendentes' : 'Expiradas'})`;
+      document.getElementById('modal').classList.remove('hidden');
+      document.getElementById('toggleAllBtn').textContent = 'Marcar Tudo';
+    }
+
+    function marcar(nome) {
+      if (selecionadas.includes(nome)) {
+        selecionadas = selecionadas.filter(l => l !== nome);
+      } else {
+        selecionadas.push(nome);
+      }
+    }
+
+    function toggleAll() {
+      const lista = tipoAtual === 'pending' ? pendentes : expiradas;
+      if (selecionadas.length === lista.length) {
+        selecionadas = [];
+      } else {
+        selecionadas = [...lista];
+      }
+      abrirModal(tipoAtual);
+    }
+
+    function fecharModal() {
+      document.getElementById('modal').classList.add('hidden');
+    }
+
+    function fazerEscolhidas() {
+      alert("Atividades selecionadas: " + selecionadas.join(", "));
+      fecharModal();
+    }
+  </script>
+</body>
+</html>
